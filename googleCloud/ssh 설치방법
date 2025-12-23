@@ -1,0 +1,49 @@
+
+
+
+1️⃣ 아래 공식 링크 접속
+
+👉 https://cloud.google.com/sdk/docs/install
+
+Windows용:
+
+GoogleCloudSDKInstaller.exe 다운로드
+
+2️⃣ 설치할 때 체크
+
+설치 중에 꼭 ✔️ 확인:
+
+✅ Add gcloud to PATH
+
+✅ Install bundled Python
+
+(이거 안 하면 또 PATH 에러 남)
+
+3️⃣ 설치 후 새 PowerShell 열기
+gcloud --version
+
+
+이게 나오면 성공.
+
+4️⃣ 로그인
+gcloud auth login
+
+
+브라우저 열림
+
+GCP 콘솔 로그인한 같은 계정으로 로그인
+
+5️⃣ 프로젝트 설정
+gcloud config set project sigma-hydra-482107-s4
+
+6️⃣ 다시 실행
+gcloud compute ssh ros-prj-251229 --zone asia-northeast3-b
+
+
+👉 이 순간:
+
+로컬에 SSH 키 생성
+
+VM에 키 자동 등록
+
+이후부터 일반 ssh 명령도 가능
