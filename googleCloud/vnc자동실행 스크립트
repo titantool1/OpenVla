@@ -1,0 +1,70 @@
+VNC 서버 자동 실행 설정
+1. VNC 서비스 파일 생성
+vncserver@.service 파일을 /etc/systemd/system/ 디렉터리에 생성합니다. 사용자 이름인 rnfnrnfn9999를 사용하여 아래와 같이 파일 내용을 편집합니다. 
+bash
+sudo nano /etc/systemd/system/vncserver@:1.service
+코드를 사용할 때는 주의가 필요합니다.
+
+파일 내용에 다음 내용을 붙여넣으세요:
+ini
+[Unit]
+Description=TigerVNC Server at :1
+After=network.target
+
+[Service]
+Type=forking
+User=rnfnrnfn9999
+Group=rnfnrnfn9999
+WorkingDirectory=/home/rnfnrnfn9999
+
+PIDFile=/home/rnfnrnfn9999/.vnc/%H:1.pid
+ExecStartPre=-/usr/bin/vncserver -kill %i > /dev/null 2>&1
+ExecStart=/usr/bin/vncserver -fg -display :1 -geometry 1280x800 -depth 24 localhost:5901
+ExecStop=/usr/bin/vncserver -kill %i
+
+[Install]
+WantedBy=multi-user.target
+코드를 사용할 때는 주의가 필요합니다.
+
+파일 저장 후 종료합니다 (Ctrl+O, Enter, Ctrl+X). 
+2. 서비스 데몬 리로드 및 활성화
+systemd 데몬을 리로드하고 방금 생성한 VNC 서비스를 부팅 시 자동 시작되도록 활성화합니다. 
+bash
+sudo systemctl daemon-reload
+sudo systemctl enable vncserver@:1.service
+코드를 사용할 때는 주의가 필요합니다.
+
+3. 현재 VNC 중지 및 새 서비스 시작
+기존에 실행 중인 VNC 및 웹소켓을 모두 종료하고, systemd를 통해 VNC 서비스를 새로 시작합니다. 
+bash
+vncserver -kill :1
+pkill -f websockify
+sudo systemctl start vncserver@:1.service
+코드를 사용할 때는 주의가 필요합니다.
+
+4. 서비스 상태 확인
+서비스가 정상적으로 실행 중인지 확인합니다.
+bash
+sudo systemctl status vncserver@:1.service
+코드를 사용할 때는 주의가 필요합니다.
+
+Active: active (running) 메시지가 보이면 성공입니다.
+웹소켓 자동 실행 설정 (선택 사항)
+VNC 서버가 실행된 후 웹소켓도 자동으로 시작되어야 합니다. 다음 스크립트를 사용자의 홈 디렉터리에 저장하고 실행 권한을 부여하세요.
+bash
+nano /home/rnfnrnfn9999/start_novnc.sh
+코드를 사용할 때는 주의가 필요합니다.
+
+파일 내용:
+bash
+#!/bin/bash
+websockify --web /usr/share/novnc/ 6080 localhost:5901 &
+코드를 사용할 때는 주의가 필요합니다.
+
+실행 권한 부여:
+bash
+chmod +x /home/rnfnrnfn9999/start_novnc.sh
+코드를 사용할 때는 주의가 필요합니다.
+
+그리고 이 스크립트를 시작 애플리케이션에 등록하여 GUI 세션 시작 시 실행되도록 설정하거나 (GUI에서 Startup Applications 검색), 별도의 systemd 서비스를 생성하여 실행할 수 있습니다. 
+모든 설정 후 VM을 재부팅(sudo reboot)하고 외부 IP 주소로 접속해 보세요.
