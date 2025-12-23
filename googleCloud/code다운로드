@@ -1,0 +1,33 @@
+Linux(Ubuntu/Debian) VS Code 설치 명령어 정리
+1. 시스템 업데이트 및 필수 패키지 설치
+설치 전에 시스템 패키지 목록을 최신화하고, HTTPS 통신에 필요한 도구들을 설치합니다.
+bash
+sudo apt update
+sudo apt install software-properties-common apt-transport-https wget -y
+코드를 사용할 때는 주의가 필요합니다.
+
+2. Microsoft GPG 키 추가
+패키지의 무결성을 확인하기 위한 보안 키를 등록합니다. (이 주소가 정확해야 합니다.)
+bash
+wget -qO- packages.microsoft.com | gpg --dearmor > packages.microsoft.gpg
+sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
+rm -f packages.microsoft.gpg
+코드를 사용할 때는 주의가 필요합니다.
+
+3. VS Code 저장소(Repository) 등록
+APT가 VS Code를 어디서 다운로드해야 하는지 알려주는 설정 파일을 생성합니다. 반드시 https://가 포함된 전체 주소를 넣어야 합니다.
+bash
+sudo sh -c 'echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] packages.microsoft.com stable main" > /etc/apt/sources.list.d/vscode.list'
+코드를 사용할 때는 주의가 필요합니다.
+
+4. 패키지 목록 업데이트 및 설치
+새로 등록한 저장소를 반영하고 실제 프로그램을 설치합니다.
+bash
+sudo apt update
+sudo apt install code
+코드를 사용할 때는 주의가 필요합니다.
+
+💡 팁: 설치 확인 및 실행
+버전 확인: code --version
+실행: 터미널에 code라고 입력하거나, 현재 폴더를 열고 싶으면 code .을 입력하세요.
+추가 정보: 상세한 가이드는 Visual Studio Code 공식 설치 문서에서 확인할 수 있습니다.
