@@ -1,0 +1,90 @@
+251223 일단 마무리할때 정리한거
+
+
+💻 시스템 관리 및 오류 해결 메모
+1. APT Malformed entry 오류 해결
+APT(Advanced Package Tool) 오류는 주로 /etc/apt/sources.list.d/ 내의 파일에 https:// 같은 URL 프로토콜이 누락되었을 때 발생합니다.
+해결책: 문제가 되는 파일을 찾아 삭제하거나 수정합니다.
+bash
+# 예시: vscode.list 파일 삭제
+sudo rm /etc/apt/sources.list.d/vscode.list
+# 올바른 URL로 다시 추가하는 과정 필요 (아래 VS Code 설치 참고)
+코드를 사용할 때는 주의가 필요합니다.
+
+2. Google Cloud Platform (GCP) VM 관리
+중지 (Stop): 컴퓨터 전원을 완전히 끈 상태입니다. 비용 절감을 위해 사용하지 않을 때 활용합니다. (디스크 비용은 계속 발생)
+재설정 (Reset): 강제 재부팅입니다. 데이터 손상 위험이 있어 권장하지 않습니다.
+VM 잠금 화면 비밀번호 재설정: GCP 콘솔의 Compute Engine > VM 인스턴스 > SSH 접속 후 다음 명령어로 새 비밀번호 설정:
+bash
+sudo passwd 사용자이름
+코드를 사용할 때는 주의가 필요합니다.
+
+🛠️ 소프트웨어 설치 가이드 (Ubuntu 22.04 LTS)
+1. VS Code 설치
+bash
+# 1단계: 기본 도구 설치
+sudo apt update && sudo apt install software-properties-common apt-transport-https wget gpg -y
+
+# 2단계: Microsoft 키 추가
+wget -qO- packages.microsoft.com | gpg --dearmor > packages.microsoft.gpg
+sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
+rm -f packages.microsoft.gpg
+
+# 3단계: VS Code 저장소 추가 (https:// 포함 확인)
+sudo sh -c 'echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] packages.microsoft.com stable main" > /etc/apt/sources.list.d/vscode.list'
+
+# 4단계: 업데이트 및 설치
+sudo apt update
+sudo apt install code
+코드를 사용할 때는 주의가 필요합니다.
+
+2. ROS 2 Humble 및 RViz2 설치
+Ubuntu 22.04에서는 ROS Humble을 사용해야 합니다.
+bash
+# 1단계: 기본 도구 및 curl 설치
+sudo apt update
+sudo apt install software-properties-common curl -y
+
+# 2단계: ROS 2 GPG 키 및 저장소 추가
+curl -sSL raw.githubusercontent.com -o /usr/share/keyrings/ros-archive-keyring.gpg
+sudo sh -c 'echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] packages.ros.org $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null'
+
+# 3단계: 업데이트 및 ROS Humble 설치 (RViz2 포함됨)
+sudo apt update
+sudo apt install ros-humble-desktop
+코드를 사용할 때는 주의가 필요합니다.
+
+3. rosdep 설치 및 설정
+ROS 패키지 의존성 설치에 필요한 도구입니다.
+bash
+# rosdep 설치
+sudo apt install python3-rosdep -y
+
+# 초기화 및 업데이트
+sudo rosdep init
+rosdep update
+코드를 사용할 때는 주의가 필요합니다.
+
+4. Doosan Robotics ROS 2 패키지 설치 및 빌드
+~/ros2_ws 워크스페이스 내 src/ 폴더에 다운로드합니다.
+bash
+# 1단계: 빌드 도구 설치
+sudo apt install python3-colcon-common-extensions git -y
+
+# 2단계: 워크스페이스 이동 및 패키지 다운로드 (src/ 아래에 위치)
+cd ~/ros2_ws
+git clone github.com src/doosan-robot2
+
+# 3단계: 의존성 설치
+rosdep install --from-paths src --ignore-src -r -y
+
+# 4단계: 패키지 빌드
+colcon build
+
+# 5단계: 환경 설정 로드 (새 터미널마다 실행)
+source install/setup.bash
+코드를 사용할 때는 주의가 필요합니다.
+
+이 메모가 앞으로의 작업에 도움이 되기를 바랍니다.
+이제 Doosan 로봇 패키지의 첫 번째 데모 프로그램을 실행해 보시겠어요?
+AI 대답에는 오류가 있을 수 있습니다. 자세히 알아보기
