@@ -1,0 +1,52 @@
+http://34.64.45.137:6080/vnc.html 이걸 인터넷 창에 쳐서 들어가야함
+
+
+1. GCP 콘솔 설정 요약 (한 번만 설정하면 됨)
+이 설정들은 VM을 새로 만들지 않는 한 다시 할 필요가 없습니다.
+VM 인스턴스 생성: Ubuntu 22.04 LTS 기반의 e2-standard-4 (vCPU 4개, 메모리 16GB) 사양으로 생성했습니다.
+방화벽 규칙 추가: VPC 네트워크 > 방화벽 규칙에서 다음 포트를 허용하는 규칙을 만들었습니다.
+tcp:5901-5902 (VNC 서버 포트)
+tcp:6080 (noVNC 웹 프록시 포트)
+네트워크 태그 적용: VM 인스턴스의 네트워크 태그 섹션에 방화벽 규칙과 연결된 태그(예: vnc-server)를 추가했습니다.
+2. VM 내에서 설정한 내용 요약 (한 번만 설정하면 됨)
+이 설정들도 VM을 초기화하지 않는 한 다시 할 필요가 없습니다.
+시스템 업데이트 및 GUI 설치:
+bash
+sudo apt update && sudo apt upgrade -y
+sudo apt install xfce4 xfce4-goodies -y 
+코드를 사용할 때는 주의가 필요합니다.
+
+VNC 서버 설치:
+bash
+sudo apt install tightvncserver -y
+# 비밀번호 설정 (처음 실행 시)
+코드를 사용할 때는 주의가 필요합니다.
+
+VNC 서버 설정 파일 수정: ~/.vnc/xstartup 파일을 수정하여 XFCE4가 실행되도록 했습니다.
+bash
+# nano ~/.vnc/xstartup 명령어 후 내용 붙여넣기
+#!/bin/sh
+unset SESSION_MANAGER
+unset DBUS_SESSION_BUS_ADDRESS
+exec startxfce4
+코드를 사용할 때는 주의가 필요합니다.
+
+websockify (noVNC 프록시) 설치:
+bash
+sudo apt install websockify python3-websockify python3-numpy -y
+코드를 사용할 때는 주의가 필요합니다.
+
+3. VM 부팅/재시작 시 매번 실행해야 하는 명령어
+VM을 껐다가 다시 켜면 VNC 서버와 웹 프록시는 자동으로 실행되지 않습니다. SSH로 접속하여 다음 두 가지 명령어를 실행해야 합니다.
+VNC 서버 시작 (디스플레이 번호 :2 사용):
+bash
+vncserver :2 
+코드를 사용할 때는 주의가 필요합니다.
+
+noVNC 웹 프록시 실행 (백그라운드에서 실행):
+bash
+websockify -D --web=/usr/share/novnc/ 6080 localhost:5902
+코드를 사용할 때는 주의가 필요합니다.
+
+-D 옵션은 백그라운드에서 실행하라는 뜻입니다.
+이제 GUI 환경이 성공적으로 구축되었습니다. 이어서 ROS 관련 프로젝트를 위해 ROS2 Humble 설치를 진행하실 건가요?
